@@ -14,11 +14,12 @@ import matplotlib.pyplot as plt
 #from pytesseract import image_to_string
 # from paddleocr import PaddleOCR,draw_ocr
 import easyocr
+import time
 
 
 def get_Text(result, img_path):
     try:
-        print(result)
+        # print(result)
         # result = result[0][1]
         # image = Image.open(img_path).convert('RGB')
         # boxes = [line[1] for line in result[0]]
@@ -88,8 +89,10 @@ def get_bbox_content(img):
 
 
 # Load Paddle Model
+start = time.perf_counter()
 ocr = easyocr.Reader(['en'])
-
+elapsed = time.perf_counter() - start
+print(f'Took {elapsed} seconds to load EasyOCR.')
 
 # Model
 model_path = r"best.pt"  # custom model path
@@ -107,8 +110,8 @@ frame = cv2.VideoCapture(0)
 frame_width = int(frame.get(3))
 frame_height = int(frame.get(4))
 size = (frame_width, frame_height)
-writer = cv2.VideoWriter(
-    'video_output/'+str(uuid.uuid4()) + '_output.mp4', -1, 8, size)
+# writer = cv2.VideoWriter(
+#     'video_output/'+str(uuid.uuid4()) + '_output.mp4', -1, 8, size)
 
 text_font = cv2.FONT_HERSHEY_PLAIN
 color = (0, 0, 255)
@@ -134,12 +137,13 @@ def get_distance(p1, p2):
     return dis
 
 
-while True:
+while(frame.isOpened()):
     ctr = ctr + 1
     ret, image = frame.read()
     if ret:
         output = model(image)
         result = np.array(output.pandas().xyxy[0])
+        start = time.perf_counter()
         for i in result:
             p1 = (int(i[0]), int(i[1]))
             p2 = (int(i[2]), int(i[3]))
@@ -173,9 +177,32 @@ while True:
             lineType=cv2.LINE_AA
         )
         #cv2.putText(image, text_font, 3, (100, 255, 0), 3, cv2.LINE_AA)
-        writer.write(image)
+        # writer.write(image)
         # Show image frame by frame and combine into video file
-        cv2.imshow("image", image)
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        new_frame_time = time.time()
+        fps = 1/(new_frame_time-prev_frame_time)
+        prev_frame_time = new_frame_time
+        fps = int(fps)
+        fps = str(fps)
+        text_size = cv2.getTextSize(fps, font, 3, 3)[0]
+
+        cv2.putText(image, fps, (image.shape[1]-(text_size[0]+7), 115), font, 3,
+                    (100, 255, 0), 3, cv2.LINE_AA)
+
+        elapsed = time.perf_counter() - start
+        cv2.putText(
+            image,
+            text=f'{round(elapsed, 2)} seconds',
+            org=(7, 105),
+            fontFace=text_font,
+            fontScale=2,
+            color=(90, 85, 68),
+            thickness=2,
+            lineType=cv2.LINE_AA
+        )
+        cv2.imshow("ANPR", image)
+        print(f'Took {elapsed} seconds to process.')
     else:
         break
 
