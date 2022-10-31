@@ -162,8 +162,16 @@ while True:
                 thickness=2
             )  # class and confidence text
         # Add our Company
-        cv2.putText(image, 'FALCONS.AI', (7, 70), text_font,
-                    3, (100, 255, 0), 3, cv2.LINE_AA)
+        cv2.putText(
+            image,
+            text='FALCONS.AI',
+            org=(7, 70),
+            fontFace=text_font,
+            fontScale=3,
+            color=(0, 0, 139),
+            thickness=3,
+            lineType=cv2.LINE_AA
+        )
         #cv2.putText(image, text_font, 3, (100, 255, 0), 3, cv2.LINE_AA)
         writer.write(image)
         # Show image frame by frame and combine into video file
