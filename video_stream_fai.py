@@ -3,6 +3,7 @@
 from email.mime import image
 import glob
 import os
+import sys
 import cv2
 import uuid
 import time
@@ -112,8 +113,8 @@ ocr = easyocr.Reader(['en'], gpu=True)
 elapsed = time.perf_counter() - start
 print(f'Took {elapsed} seconds to load Resources.')
 
-# capture_device = 0
-capture_device = 'rtsp://192.168.1.200:8080/h264_ulaw.sdp'
+capture_device = 0
+# capture_device = 'rtsp://192.168.1.200:8080/h264_ulaw.sdp'
 
 frame = cv2.VideoCapture(capture_device)
 
@@ -162,8 +163,10 @@ if __name__ == '__main__':
     try:
         streamer = ThreadedCamera(capture_device)
     except Exception as e:
-        # print(e)
-        raise Exception(e)
+        print(e)
+        print('errorrrrrr')
+        sys.exit()
+        # raise Exception(e)
 
     while True:
         ctr = ctr + 1

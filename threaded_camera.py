@@ -1,5 +1,3 @@
-from shutil import ExecError
-from termios import ECHOE
 import cv2
 from threading import Thread
 from typing import Any
@@ -7,15 +5,12 @@ from typing import Any
 
 class ThreadedCamera(object):
     def __init__(self, source: Any = 0):
-        try:
-            self.capture = cv2.VideoCapture(source)
-            self.thread = Thread(target=self.update, args=())
-            self.thread.daemon = True
-            self.thread.start()
-            self.status = False
-            self.frame = None
-        except Exception as e:
-            raise Exception(e)
+        self.capture = cv2.VideoCapture(source)
+        self.thread = Thread(target=self.update, args=())
+        self.thread.daemon = True
+        self.thread.start()
+        self.status = False
+        self.frame = None
 
     def update(self):
         while True:
