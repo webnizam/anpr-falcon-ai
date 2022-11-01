@@ -1,5 +1,6 @@
 # Falcons.ai
 # Michael Stattelman 2022
+from email.mime import image
 import glob
 import os
 import cv2
@@ -16,6 +17,8 @@ import matplotlib.pyplot as plt
 # from paddleocr import PaddleOCR,draw_ocr
 import easyocr
 import time
+
+from threaded_camera import ThreadedCamera
 
 
 def get_Text(result, img_path):
@@ -109,10 +112,13 @@ ocr = easyocr.Reader(['en'], gpu=True)
 elapsed = time.perf_counter() - start
 print(f'Took {elapsed} seconds to load Resources.')
 
-capture_device = 0
-# capture_device = 'rtsp://192.168.1.200:8080/h264_ulaw.sdp'
+# capture_device = 0
+capture_device = 'rtsp://192.168.1.200:8080/h264_ulaw.sdp'
 
 frame = cv2.VideoCapture(capture_device)
+
+streamer = ThreadedCamera(capture_device)
+
 
 frame_width = int(frame.get(3))
 frame_height = int(frame.get(4))
@@ -156,10 +162,11 @@ if __name__ == '__main__':
     remove_previous_files()
     print('All temp files cleared.')
 
-    while(frame.isOpened()):
+    while True:
         ctr = ctr + 1
-        ret, image = frame.read()
-        if ret:
+        # ret, image = frame.read()
+        image = streamer.grab_frame()
+        if image is not None:
             output = model(image)
             result = np.array(output.pandas().xyxy[0])
             start = time.perf_counter()
@@ -224,9 +231,9 @@ if __name__ == '__main__':
             )
             cv2.imshow("ANPR", image)
             print(f'Took {elapsed} seconds to process the frame.')
-        else:
-            frame.release()
-            break
+        # else:
+        #     frame.release()
+        #     break
 
         if waitKey(1) & 0xFF == ord('q'):
             # remove_previous_files()
