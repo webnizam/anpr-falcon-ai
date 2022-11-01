@@ -117,9 +117,6 @@ capture_device = 'rtsp://192.168.1.200:8080/h264_ulaw.sdp'
 
 frame = cv2.VideoCapture(capture_device)
 
-streamer = ThreadedCamera(capture_device)
-
-
 frame_width = int(frame.get(3))
 frame_height = int(frame.get(4))
 size = (frame_width, frame_height)
@@ -161,6 +158,12 @@ if __name__ == '__main__':
 
     remove_previous_files()
     print('All temp files cleared.')
+
+    try:
+        streamer = ThreadedCamera(capture_device)
+    except Exception as e:
+        # print(e)
+        raise Exception(e)
 
     while True:
         ctr = ctr + 1
