@@ -231,14 +231,9 @@ if __name__ == '__main__':
             )
             cv2.imshow("ANPR", image)
             print(f'Took {elapsed} seconds to process the frame.')
-        # else:
-        #     frame.release()
-        #     break
 
         if waitKey(1) & 0xFF == ord('q'):
-            # remove_previous_files()
-            frame.release()
             break
 
-    frame.release()
-    cv2.destroyAllWindows()
+    # frame.release()
+    # cv2.destroyAllWindows()
