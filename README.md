@@ -15,8 +15,8 @@
 <div align="center">
 
 
-  <h3 align="center">
-ANPR-Falcons.ai</h3>
+
+## ANPR-Falcons.ai
 
   <p align="center">
     A small repository to provide an example of how to detect license plates in a video file, video stream or static image. Isolate the plate with a bounding box, extract the contents of the bounding box and then using OCR extract the text on the plate. Using the extraced text we write the output back to the image/frame.
