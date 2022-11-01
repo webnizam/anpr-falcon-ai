@@ -1,6 +1,5 @@
 # Falcons.ai
 # Michael Stattelman 2022
-from email.mime import image
 import glob
 import os
 import sys
@@ -116,11 +115,11 @@ print(f'Took {elapsed} seconds to load Resources.')
 capture_device = 0
 # capture_device = 'rtsp://192.168.1.200:8080/h264_ulaw.sdp'
 
-frame = cv2.VideoCapture(capture_device)
+# frame = cv2.VideoCapture(capture_device)
 
-frame_width = int(frame.get(3))
-frame_height = int(frame.get(4))
-size = (frame_width, frame_height)
+# frame_width = int(frame.get(3))
+# frame_height = int(frame.get(4))
+# size = (frame_width, frame_height)
 # writer = cv2.VideoWriter(
 #     'video_output/'+str(uuid.uuid4()) + '_output.mp4', -1, 8, size)
 
@@ -160,13 +159,7 @@ if __name__ == '__main__':
     remove_previous_files()
     print('All temp files cleared.')
 
-    try:
-        streamer = ThreadedCamera(capture_device)
-    except Exception as e:
-        print(e)
-        print('errorrrrrr')
-        sys.exit()
-        # raise Exception(e)
+    streamer = ThreadedCamera(capture_device)
 
     while True:
         ctr = ctr + 1
@@ -241,5 +234,4 @@ if __name__ == '__main__':
         if waitKey(1) & 0xFF == ord('q'):
             break
 
-    # frame.release()
-    # cv2.destroyAllWindows()
+    cv2.destroyAllWindows()
