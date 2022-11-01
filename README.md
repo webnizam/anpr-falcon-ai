@@ -21,7 +21,7 @@
 Progressive Web Application Camera Access</h3>
 
   <p align="center">
-    A small repository to provide an example of how to gain camera access in a Progressive web application, capture and save a frame. Mimicing the cameras actual photo functionality.
+    A small repository to provide an example of how to detect license plates in a video file, video stream or static image. Isolate the plate with a bounding box, extract the contents of the bounding box and then using OCR extract the text on the plate. Using the extraced text we write the output back to the image/frame.
     <br />
 
   </p>
@@ -29,9 +29,9 @@ Progressive Web Application Camera Access</h3>
 
 
 <!-- ABOUT THE PROJECT -->
-## About The Emotion Detection Application by Falcons.ai
+## About The Automatic Number Plate Recognition Model with Falcons.ai
 
-In this project I wanted to test the capability of generating a full screen video background using the rear facing camera of my mobile device through a web browser. Then take certain stills of that live feed and save them to the device. This was all done using standard libraries for Bootstrap, Jquery, Javascript and CSS. The implementation was not very difficult or cumbersome at all.
+In this project I wanted to test the capability to identify, capture and extract the text of a license plate.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
