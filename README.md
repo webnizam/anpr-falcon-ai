@@ -82,7 +82,7 @@ See the https://github.com/webnizam/anpr-falcon-ai/issues for a full list of pro
   <a href="https://github.com/mstatt/pwa-camera-access">
     <img src="/falcons-logo2.png" alt="Logo" >
   </a>
-  
+ </div>
  
 <!-- LICENSE -->
 ## License
