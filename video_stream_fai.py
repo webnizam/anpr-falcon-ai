@@ -7,6 +7,7 @@ import cv2
 import uuid
 import time
 import torch
+import string
 # import pytesseract
 import numpy as np
 from PIL import Image
@@ -85,7 +86,7 @@ def get_bbox_content(img):
 
     cv2.imwrite(filename, gray_image)
     # OCR with paddle more accurate than pytesseract
-    result = ocr.readtext(filename)
+    result = ocr.readtext(filename, allowlist=allowlist)
     plate_num = get_Text(result, filename)
     # OCR with pytesseract
     #plate_num = pytesseract.image_to_string(gray_image, lang='eng')
@@ -108,12 +109,16 @@ model = torch.hub.load('ultralytics-yolov5-6371de8/', 'custom',
 
 model = model.to(device)
 
+
 ocr = easyocr.Reader(['en'], gpu=True)
 elapsed = time.perf_counter() - start
 print(f'Took {elapsed} seconds to load Resources.')
 
-capture_device = 0
-# capture_device = 'rtsp://192.168.1.200:8080/h264_ulaw.sdp'
+
+allowlist = string.digits + string.ascii_letters
+
+# capture_device = 0
+capture_device = 'rtsp://192.168.1.200:8080/h264_ulaw.sdp'
 
 # frame = cv2.VideoCapture(capture_device)
 
@@ -228,7 +233,7 @@ if __name__ == '__main__':
                 thickness=2,
                 lineType=cv2.LINE_AA
             )
-            cv2.imshow("ANPR", image)
+            cv2.imshow("ANPR - FALCONS.AI", image)
             print(f'Took {elapsed} seconds to process the frame.')
 
         if waitKey(1) & 0xFF == ord('q'):
