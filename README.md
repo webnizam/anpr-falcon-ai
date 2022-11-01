@@ -49,8 +49,8 @@ This application was built using Python, Ultralytics Yolov5 and EasyOCR
 
 In the images below you can see still shots of the application runnning on your local machine. 
 - Add example images
-Video Capture            |  Plate  Capture
-:-------------------------:|:-------------------------:
+Video Capture            |
+:-------------------------:
 ![screen-screenshot] | 
 
 
