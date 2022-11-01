@@ -24,7 +24,7 @@
 
   </p>
 </div>
-
+ <br/> <br/>
 
 <!-- ABOUT THE PROJECT -->
 ## About The Automatic Number Plate Recognition Model with Falcons.ai
@@ -41,23 +41,22 @@ In this project I wanted to test the capability to identify, capture and extract
 This application was built using Python, Ultralytics Yolov5 and EasyOCR
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
+ <br/> <br/>
 
 
 <!-- OUTPUT -->
 ## Output
 
-In the images below you can see still shots of the application runnning on your local machine. 
-- Add example images
+In the image below you can see still shots of the application runnning on your local machine. 
+
 Video Capture            |
-:-------------------------:
 ![screen-screenshot] | 
 
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-
+ <br/> <br/>
 <!-- CONTRIBUTING -->
 ## Contributing
 
@@ -75,7 +74,7 @@ Don't forget to give the project a star! Thanks again!
 See the https://github.com/webnizam/anpr-falcon-ai/issues for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
+ <br/> <br/>
 <!-- PROJECT LOGO -->
 <br />
 <div align="center"> In partnership with: <br/>
@@ -83,6 +82,7 @@ See the https://github.com/webnizam/anpr-falcon-ai/issues for a full list of pro
     <img src="/falcons-logo2.png" alt="Logo" >
   </a>
  </div>
+ <br/> <br/> <br/>
  
 <!-- LICENSE -->
 ## License
