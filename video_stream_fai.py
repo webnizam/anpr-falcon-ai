@@ -1,5 +1,6 @@
 # Falcons.ai
 # Michael Stattelman 2022
+import glob
 import os
 import cv2
 import uuid
@@ -90,14 +91,12 @@ def get_bbox_content(img):
 
 # Load Paddle Model
 start = time.perf_counter()
-ocr = easyocr.Reader(['en'])
-elapsed = time.perf_counter() - start
-print(f'Took {elapsed} seconds to load EasyOCR.')
+
 
 # Model
 model_path = r"best.pt"  # custom model path
 video_path = r"videos/plates2.mp4"  # input video path
-cpu_or_cuda = "cpu"  # choose device; "cpu" or "cuda"(if cuda is available)
+cpu_or_cuda = "mps"  # choose device; "cpu" or "cuda"(if cuda is available)
 device = torch.device(cpu_or_cuda)
 # Use local Yolo Model
 model_name = 'best.pt'
@@ -105,7 +104,15 @@ model = torch.hub.load('ultralytics-yolov5-6371de8/', 'custom',
                        source='local', path=model_name, force_reload=True)
 
 model = model.to(device)
-frame = cv2.VideoCapture(0)
+
+ocr = easyocr.Reader(['en'], gpu=True)
+elapsed = time.perf_counter() - start
+print(f'Took {elapsed} seconds to load Resources.')
+
+capture_device = 0
+# capture_device = 'rtsp://192.168.1.200:8080/h264_ulaw.sdp'
+
+frame = cv2.VideoCapture(capture_device)
 
 frame_width = int(frame.get(3))
 frame_height = int(frame.get(4))
@@ -137,77 +144,94 @@ def get_distance(p1, p2):
     return dis
 
 
-while(frame.isOpened()):
-    ctr = ctr + 1
-    ret, image = frame.read()
-    if ret:
-        output = model(image)
-        result = np.array(output.pandas().xyxy[0])
-        start = time.perf_counter()
-        for i in result:
-            p1 = (int(i[0]), int(i[1]))
-            p2 = (int(i[2]), int(i[3]))
-            text_origin = (int(i[0]), int(i[1])-5)
-            # drawing bounding boxes
-            cv2.rectangle(image, p1, p2, color=color, thickness=2)
-            # Extract bounding Box Content:
-            img = cv2.rectangle(image, p1, p2, color=color, thickness=2)
-            # Retreive Plate number
-            plate_id = get_bbox_content(img)
-            # write bbox and plate number bak to image
-            font_scale = get_optimal_font_scale(plate_id, get_distance(p1, p2))
+def remove_previous_files():
+    files = glob.glob('./plate_capture/*')
+    for f in files:
+        print(f)
+        os.remove(f)
+
+
+if __name__ == '__main__':
+
+    remove_previous_files()
+    print('All temp files cleared.')
+
+    while(frame.isOpened()):
+        ctr = ctr + 1
+        ret, image = frame.read()
+        if ret:
+            output = model(image)
+            result = np.array(output.pandas().xyxy[0])
+            start = time.perf_counter()
+            for i in result:
+                p1 = (int(i[0]), int(i[1]))
+                p2 = (int(i[2]), int(i[3]))
+                text_origin = (int(i[0]), int(i[1])-5)
+                # drawing bounding boxes
+                cv2.rectangle(image, p1, p2, color=color, thickness=2)
+                # Extract bounding Box Content:
+                img = cv2.rectangle(image, p1, p2, color=color, thickness=2)
+                # Retreive Plate number
+                plate_id = get_bbox_content(img)
+                # write bbox and plate number bak to image
+                font_scale = get_optimal_font_scale(
+                    plate_id, get_distance(p1, p2)
+                )
+                cv2.putText(
+                    image,
+                    text=plate_id,
+                    org=text_origin,
+                    fontFace=text_font,
+                    fontScale=font_scale,
+                    color=color,
+                    thickness=2
+                )  # class and confidence text
+            # Add our Company
             cv2.putText(
                 image,
-                text=plate_id,
-                org=text_origin,
+                text='FALCONS.AI',
+                org=(7, 70),
                 fontFace=text_font,
-                fontScale=font_scale,
-                color=color,
-                thickness=2
-            )  # class and confidence text
-        # Add our Company
-        cv2.putText(
-            image,
-            text='FALCONS.AI',
-            org=(7, 70),
-            fontFace=text_font,
-            fontScale=3,
-            color=(0, 0, 139),
-            thickness=3,
-            lineType=cv2.LINE_AA
-        )
-        #cv2.putText(image, text_font, 3, (100, 255, 0), 3, cv2.LINE_AA)
-        # writer.write(image)
-        # Show image frame by frame and combine into video file
-        font = cv2.FONT_HERSHEY_SIMPLEX
-        new_frame_time = time.time()
-        fps = 1/(new_frame_time-prev_frame_time)
-        prev_frame_time = new_frame_time
-        fps = int(fps)
-        fps = str(fps)
-        text_size = cv2.getTextSize(fps, font, 3, 3)[0]
+                fontScale=3,
+                color=(0, 0, 139),
+                thickness=3,
+                lineType=cv2.LINE_AA
+            )
+            #cv2.putText(image, text_font, 3, (100, 255, 0), 3, cv2.LINE_AA)
+            # writer.write(image)
+            # Show image frame by frame and combine into video file
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            new_frame_time = time.time()
+            fps = 1/(new_frame_time-prev_frame_time)
+            prev_frame_time = new_frame_time
+            fps = int(fps)
+            fps = str(fps)
+            text_size = cv2.getTextSize(fps, font, 3, 3)[0]
 
-        cv2.putText(image, fps, (image.shape[1]-(text_size[0]+7), 115), font, 3,
-                    (100, 255, 0), 3, cv2.LINE_AA)
+            cv2.putText(image, fps, (image.shape[1]-(text_size[0]+7), 115), font, 3,
+                        (100, 255, 0), 3, cv2.LINE_AA)
 
-        elapsed = time.perf_counter() - start
-        cv2.putText(
-            image,
-            text=f'{round(elapsed, 2)} seconds',
-            org=(7, 105),
-            fontFace=text_font,
-            fontScale=2,
-            color=(90, 85, 68),
-            thickness=2,
-            lineType=cv2.LINE_AA
-        )
-        cv2.imshow("ANPR", image)
-        print(f'Took {elapsed} seconds to process.')
-    else:
-        break
+            elapsed = time.perf_counter() - start
+            cv2.putText(
+                image,
+                text=f'{round(elapsed, 2)} seconds',
+                org=(7, 105),
+                fontFace=text_font,
+                fontScale=2,
+                color=(90, 85, 68),
+                thickness=2,
+                lineType=cv2.LINE_AA
+            )
+            cv2.imshow("ANPR", image)
+            print(f'Took {elapsed} seconds to process the frame.')
+        else:
+            frame.release()
+            break
 
-    if waitKey(1) & 0xFF == ord('q'):
-        break
+        if waitKey(1) & 0xFF == ord('q'):
+            # remove_previous_files()
+            frame.release()
+            break
 
-frame.release()
-cv2.destroyAllWindows()
+    frame.release()
+    cv2.destroyAllWindows()
