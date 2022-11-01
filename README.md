@@ -3,10 +3,8 @@
 <div id="top"></div>
 <div align="center">
   
-![](https://img.shields.io/badge/Language-Javascript-blue)
+![](https://img.shields.io/badge/Language-Python-blue)
 ![](https://img.shields.io/badge/License-MIT-blue)
-![](https://img.shields.io/github/issues/webnizam/anpr-falcon-ai)
-![](https://img.shields.io/github/forks/webnizam/anpr-falcon-ai)
   
 </div>
 
