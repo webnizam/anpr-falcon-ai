@@ -51,7 +51,7 @@ In the images below you can see still shots of the application runnning on your 
 - Add example images
 Video Capture            |  Plate  Capture
 :-------------------------:|:-------------------------:
-
+![screen-screenshot] | 
 
 
 
@@ -76,7 +76,12 @@ See the https://github.com/webnizam/anpr-falcon-ai/issues for a full list of pro
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/mstatt/pwa-camera-access">
+    <img src="/falcons-logo2.png" alt="Logo" >
+  </a>
 <!-- LICENSE -->
 ## License
 
@@ -85,3 +90,4 @@ See the https://github.com/webnizam/anpr-falcon-ai/issues for a full list of pro
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
+[screen-screenshot]: render.jpg
