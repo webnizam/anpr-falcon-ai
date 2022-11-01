@@ -86,7 +86,13 @@ def get_bbox_content(img):
 
     cv2.imwrite(filename, gray_image)
     # OCR with paddle more accurate than pytesseract
-    result = ocr.readtext(filename, allowlist=allowlist)
+    result = ocr.readtext(
+        filename, 
+        allowlist=allowlist,
+        batch_size=10, 
+        decoder='wordbeamsearch', 
+        beamWidth=6
+        )
     plate_num = get_Text(result, filename)
     # OCR with pytesseract
     #plate_num = pytesseract.image_to_string(gray_image, lang='eng')
@@ -117,8 +123,8 @@ print(f'Took {elapsed} seconds to load Resources.')
 
 allowlist = string.digits + string.ascii_letters
 
-# capture_device = 0
-capture_device = 'rtsp://192.168.1.200:8080/h264_ulaw.sdp'
+capture_device = 1
+# capture_device = 'rtsp://192.168.1.200:8080/h264_ulaw.sdp'
 
 # frame = cv2.VideoCapture(capture_device)
 
@@ -204,7 +210,7 @@ if __name__ == '__main__':
                 org=(7, 70),
                 fontFace=text_font,
                 fontScale=3,
-                color=(0, 0, 139),
+                color=(0, 0, 255),
                 thickness=3,
                 lineType=cv2.LINE_AA
             )
