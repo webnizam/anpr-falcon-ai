@@ -86,6 +86,13 @@ def get_bbox_content(img):
 
     # cv2.imwrite(filename, gray_image)
     # OCR with paddle more accurate than pytesseract
+
+    dim = (600, 400)
+
+    # img = cv2.resize(img, dim, interpolation=cv2.INTER_NEAREST)
+
+    print(f'{img.shape=}')
+
     result = ocr.readtext(
         img,
         allowlist=allowlist
