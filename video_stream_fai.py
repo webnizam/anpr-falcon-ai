@@ -89,7 +89,7 @@ def get_bbox_content(img):
 
     dim = (600, 400)
 
-    img = cv2.resize(img, dim, interpolation=cv2.INTER_CUBIC)
+    img = cv2.resize(img, dim, interpolation=cv2.INTER_LANCZOS4)
 
     print(f'{img.shape=}')
 
@@ -188,6 +188,15 @@ if __name__ == '__main__':
     remove_previous_files()
     print('All temp files cleared.')
 
+    with open('authorized_plates.json') as f:
+        try:
+            authorized_plates = json.load(f)
+            if not authorized_plates:
+                authorized_plates = []
+        except:
+            authorized_plates = []
+
+    print(f'{authorized_plates=}')
     streamer = WebcamVideoStream(capture_device)
 
     streamer.start()
@@ -198,8 +207,10 @@ if __name__ == '__main__':
         ctr = ctr + 1
         # ret, image = frame.read()
         image = streamer.read()
+        do_process = (datetime.now() - last_time).microseconds/1000 > 100
+        # do_process = True
         if image is not None:
-            if (datetime.now() - last_time).microseconds/1000 > 200:
+            if do_process:
                 # print(f'{(datetime.now() - last_time).microseconds=}')
                 last_time = datetime.now()
                 output = model(image)
@@ -248,6 +259,45 @@ if __name__ == '__main__':
                             color=color,
                             thickness=2
                         )  # class and confidence text
+                        authorized = False
+                        for plate in authorized_plates:
+                            if plate in plate_id:
+                                authorized = True
+                                break
+
+                        height_, width_, c = image.shape
+
+                        if authorized:
+                            text_ = 'Authorized'
+                            text_size_ = cv2.getTextSize(
+                                text_, text_font, 5, 2)[0]
+                            origin_ = (
+                                int((width_-text_size_[0])/2), height_ - text_size_[1])
+                            cv2.putText(
+                                image,
+                                text=text_,
+                                org=origin_,
+                                fontFace=text_font,
+                                fontScale=5,
+                                color=(0, 255, 0),
+                                thickness=3
+                            )
+                        else:
+                            text_ = 'Not Authorized'
+                            text_size_ = cv2.getTextSize(
+                                text_, text_font, 5, 2)[0]
+                            origin_ = (
+                                int((width_-text_size_[0])/2), height_ - text_size_[1])
+                            cv2.putText(
+                                image,
+                                text=text_,
+                                org=origin_,
+                                fontFace=text_font,
+                                fontScale=5,
+                                color=(0, 0, 255),
+                                thickness=3
+                            )  #
+
             # Add our Company
             cv2.putText(
                 image,
