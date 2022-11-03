@@ -4,7 +4,7 @@ from typing import Any
 
 
 class WebcamVideoStream:
-    def __init__(self, src: Any = 0, width=640, height=320):
+    def __init__(self, src: Any = 0, width=320, height=240):
         self.stream = cv2.VideoCapture(src)
         self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, width)
         self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, height)

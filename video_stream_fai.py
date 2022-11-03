@@ -200,34 +200,35 @@ if __name__ == '__main__':
                 output = model(image)
                 result = np.array(output.pandas().xyxy[0])
                 start = time.perf_counter()
-                for i in result:
-                    p1 = (int(i[0]), int(i[1]))
-                    p2 = (int(i[2]), int(i[3]))
-                    text_origin = (int(i[0]), int(i[1])-5)
-                    # drawing bounding boxes
-                    cv2.rectangle(image, p1, p2, color=color, thickness=2)
-                    # Extract bounding Box Content:
-                    img = cv2.rectangle(
-                        image, p1, p2, color=color, thickness=2)
-                    # Retreive Plate number
-                    plate_id = get_bbox_content(img)
+                if len(result) > 0:
+                    for i in result:
+                        p1 = (int(i[0]), int(i[1]))
+                        p2 = (int(i[2]), int(i[3]))
+                        text_origin = (int(i[0]), int(i[1])-5)
+                        # drawing bounding boxes
+                        cv2.rectangle(image, p1, p2, color=color, thickness=2)
+                        # Extract bounding Box Content:
+                        img = cv2.rectangle(
+                            image, p1, p2, color=color, thickness=2)
+                        # Retreive Plate number
+                        plate_id = get_bbox_content(img)
 
-                    save_to_json(plate_id)
+                        save_to_json(plate_id)
 
-                    # write bbox and plate number bak to image
-                    font_scale = get_optimal_font_scale(
-                        plate_id, get_distance(p1, p2)
-                    )
-                    cv2.putText(
-                        image,
-                        text=plate_id,
-                        org=text_origin,
-                        fontFace=text_font,
-                        fontScale=font_scale,
-                        color=color,
-                        thickness=2
-                    )  # class and confidence text
-                # Add our Company
+                        # write bbox and plate number bak to image
+                        font_scale = get_optimal_font_scale(
+                            plate_id, get_distance(p1, p2)
+                        )
+                        cv2.putText(
+                            image,
+                            text=plate_id,
+                            org=text_origin,
+                            fontFace=text_font,
+                            fontScale=font_scale,
+                            color=color,
+                            thickness=2
+                        )  # class and confidence text
+            # Add our Company
             cv2.putText(
                 image,
                 text='FALCONS.AI',
