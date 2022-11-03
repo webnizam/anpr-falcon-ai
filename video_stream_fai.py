@@ -147,7 +147,7 @@ def get_optimal_font_scale(text, width):
             text, fontFace=cv2.FONT_HERSHEY_DUPLEX, fontScale=scale/10, thickness=1)
         new_width = textSize[0][0]
         if (new_width <= width):
-            return scale/7
+            return scale/5
     return 1
 
 
@@ -204,8 +204,9 @@ if __name__ == '__main__':
                     for i in result:
                         p1 = (int(i[0]), int(i[1]))
                         p2 = (int(i[2]), int(i[3]))
-                        text_origin = (int(i[0])/2, int(i[1])/2)
-                        
+
+                        text_origin = (int(i[0]), int(i[1])-3)
+
                         # drawing bounding boxes
                         cv2.rectangle(image, p1, p2, color=color, thickness=2)
                         # Extract bounding Box Content:
@@ -216,10 +217,23 @@ if __name__ == '__main__':
 
                         save_to_json(plate_id)
 
-                        # write bbox and plate number bak to image
                         font_scale = get_optimal_font_scale(
-                            plate_id, get_distance(p1, p2)
+                            plate_id, get_distance(p1, (int(i[2]), int(i[1])))
                         )
+
+                        # get boundary of this text
+                        # text_size = cv2.getTextSize(
+                        #     plate_id, text_font, font_scale, 2)[0]
+
+                        # text_origin_center = (
+                        #     int(i[2]-text_size[0]/2), int(i[0] + text_size[1]/2))
+
+                        # print(text_origin_center)
+
+                        # get coords based on boundary
+                        # text_origin_center = (
+                        #     int((img.shape[1] - text_size[0]) / 2), int((img.shape[0] + text_size[1]) / 2))
+
                         cv2.putText(
                             image,
                             text=plate_id,
