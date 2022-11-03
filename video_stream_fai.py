@@ -183,6 +183,41 @@ def save_to_json(plate):
                           separators=(',', ': '))
 
 
+def put_auth_stat(image, authorized):
+    height_, width_, c = image.shape
+
+    if authorized:
+        text_ = 'Authorized'
+        text_size_ = cv2.getTextSize(
+            text_, text_font, 5, 2)[0]
+        origin_ = (
+            int((width_-text_size_[0])/2), height_ - text_size_[1])
+        cv2.putText(
+            image,
+            text=text_,
+            org=origin_,
+            fontFace=text_font,
+            fontScale=5,
+            color=(0, 255, 0),
+            thickness=3
+        )
+    else:
+        text_ = 'Not Authorized'
+        text_size_ = cv2.getTextSize(
+            text_, text_font, 5, 2)[0]
+        origin_ = (
+            int((width_-text_size_[0])/2), height_ - text_size_[1])
+        cv2.putText(
+            image,
+            text=text_,
+            org=origin_,
+            fontFace=text_font,
+            fontScale=5,
+            color=(0, 0, 255),
+            thickness=3
+        )
+
+
 if __name__ == '__main__':
 
     remove_previous_files()
@@ -202,6 +237,10 @@ if __name__ == '__main__':
     streamer.start()
 
     last_time = datetime.now()
+
+    last_auth_time = None
+    last_auth_read_count = 0
+    authorized = False
 
     while True:
         ctr = ctr + 1
@@ -237,19 +276,6 @@ if __name__ == '__main__':
                             plate_id, get_distance(p1, (int(i[2]), int(i[1])))
                         )
 
-                        # get boundary of this text
-                        # text_size = cv2.getTextSize(
-                        #     plate_id, text_font, font_scale, 2)[0]
-
-                        # text_origin_center = (
-                        #     int(i[2]-text_size[0]/2), int(i[0] + text_size[1]/2))
-
-                        # print(text_origin_center)
-
-                        # get coords based on boundary
-                        # text_origin_center = (
-                        #     int((img.shape[1] - text_size[0]) / 2), int((img.shape[0] + text_size[1]) / 2))
-
                         cv2.putText(
                             image,
                             text=plate_id,
@@ -259,44 +285,21 @@ if __name__ == '__main__':
                             color=color,
                             thickness=2
                         )  # class and confidence text
-                        authorized = False
                         for plate in authorized_plates:
                             if plate in plate_id:
                                 authorized = True
+                                last_auth_time = datetime.now()
+                                last_auth_read_count += 1
                                 break
 
-                        height_, width_, c = image.shape
-
-                        if authorized:
-                            text_ = 'Authorized'
-                            text_size_ = cv2.getTextSize(
-                                text_, text_font, 5, 2)[0]
-                            origin_ = (
-                                int((width_-text_size_[0])/2), height_ - text_size_[1])
-                            cv2.putText(
-                                image,
-                                text=text_,
-                                org=origin_,
-                                fontFace=text_font,
-                                fontScale=5,
-                                color=(0, 255, 0),
-                                thickness=3
-                            )
-                        else:
-                            text_ = 'Not Authorized'
-                            text_size_ = cv2.getTextSize(
-                                text_, text_font, 5, 2)[0]
-                            origin_ = (
-                                int((width_-text_size_[0])/2), height_ - text_size_[1])
-                            cv2.putText(
-                                image,
-                                text=text_,
-                                org=origin_,
-                                fontFace=text_font,
-                                fontScale=5,
-                                color=(0, 0, 255),
-                                thickness=3
-                            )  #
+            
+            
+            if authorized and last_auth_time and (datetime.now() - last_auth_time).total_seconds() < 30 and last_auth_read_count > 1:
+                put_auth_stat(image, True)
+            else:
+                authorized = False
+                last_auth_read_count = 0
+                put_auth_stat(image, False)
 
             # Add our Company
             cv2.putText(
