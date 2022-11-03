@@ -204,7 +204,8 @@ if __name__ == '__main__':
                     for i in result:
                         p1 = (int(i[0]), int(i[1]))
                         p2 = (int(i[2]), int(i[3]))
-                        text_origin = (int(i[0]), int(i[1])-5)
+                        text_origin = (int(i[0])/2, int(i[1])/2)
+                        
                         # drawing bounding boxes
                         cv2.rectangle(image, p1, p2, color=color, thickness=2)
                         # Extract bounding Box Content:
