@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 import easyocr
 import time
 import json
+import argparse
 
 
 from threaded_camera import WebcamVideoStream
@@ -91,14 +92,14 @@ def get_bbox_content(img):
 
     img = cv2.resize(img, dim, interpolation=cv2.INTER_LANCZOS4)
 
-    print(f'{img.shape=}')
+    # print(f'{img.shape=}')
 
     result = ocr.readtext(
         img,
         allowlist=allowlist
     )
     plate_num = get_Text(result)
-    print(plate_num)
+    # print(plate_num)
     return plate_num
 
 
@@ -126,7 +127,18 @@ print(f'Took {elapsed} seconds to load Resources.')
 
 allowlist = string.digits + string.ascii_letters
 
-capture_device = 1
+parser = argparse.ArgumentParser(description='Process some integers.')
+parser.add_argument(
+    '-d',
+    '--device',
+    type=str,
+    default=0,
+    help='Choose the device',
+)
+
+args = parser.parse_args()
+
+capture_device = int(args.device) if str(args.device).isdigit() else str(args.device)
 # capture_device = 'rtsp://192.168.1.200:8080/h264_ulaw.sdp'
 
 # frame = cv2.VideoCapture(capture_device)
@@ -232,7 +244,11 @@ if __name__ == '__main__':
             authorized_plates = []
 
     print(f'{authorized_plates=}')
-    streamer = WebcamVideoStream(capture_device)
+    try:
+        streamer = WebcamVideoStream(capture_device)
+    except Exception as e:
+        print('Its the error', e, sep='\n\n')
+        exit(0)
 
     streamer.start()
 
@@ -292,7 +308,7 @@ if __name__ == '__main__':
                                 authorized = True
                                 last_auth_time = datetime.now()
                                 last_auth_read_count += 1
-                                print(f'{last_auth_read_count=}')
+                                # print(f'{last_auth_read_count=}')
                                 break
 
             if authorized and last_auth_time and (datetime.now() - last_auth_time).total_seconds() < auth_timeout_seconds and last_auth_read_count > auth_read_threshold:
