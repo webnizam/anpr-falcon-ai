@@ -18,6 +18,8 @@ import matplotlib.pyplot as plt
 # from paddleocr import PaddleOCR,draw_ocr
 import easyocr
 import time
+import json
+
 
 from threaded_camera import ThreadedCamera
 
@@ -87,12 +89,10 @@ def get_bbox_content(img):
     cv2.imwrite(filename, gray_image)
     # OCR with paddle more accurate than pytesseract
     result = ocr.readtext(
-        filename, 
+        filename,
         allowlist=allowlist,
-        batch_size=10, 
-        decoder='wordbeamsearch', 
-        beamWidth=6
-        )
+        batch_size=10
+    )
     plate_num = get_Text(result, filename)
     # OCR with pytesseract
     #plate_num = pytesseract.image_to_string(gray_image, lang='eng')
@@ -165,6 +165,21 @@ def remove_previous_files():
         os.remove(f)
 
 
+def save_to_json(plate):
+    if plate:
+        with open('result.json') as f:
+            try:
+                data = json.load(f)
+                if not data:
+                    data = []
+            except:
+                data = []
+            data.append(plate)
+            with open('result.json', 'w') as f:
+                json.dump(data, f, indent=4,
+                        separators=(',', ': '))
+
+
 if __name__ == '__main__':
 
     remove_previous_files()
@@ -190,6 +205,9 @@ if __name__ == '__main__':
                 img = cv2.rectangle(image, p1, p2, color=color, thickness=2)
                 # Retreive Plate number
                 plate_id = get_bbox_content(img)
+
+                save_to_json(plate_id)
+
                 # write bbox and plate number bak to image
                 font_scale = get_optimal_font_scale(
                     plate_id, get_distance(p1, p2)
