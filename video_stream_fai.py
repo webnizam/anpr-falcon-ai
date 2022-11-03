@@ -241,6 +241,8 @@ if __name__ == '__main__':
     last_auth_time = None
     last_auth_read_count = 0
     authorized = False
+    auth_timeout_seconds = 5
+    auth_read_threshold = 2
 
     while True:
         ctr = ctr + 1
@@ -290,16 +292,17 @@ if __name__ == '__main__':
                                 authorized = True
                                 last_auth_time = datetime.now()
                                 last_auth_read_count += 1
+                                print(f'{last_auth_read_count=}')
                                 break
 
-            
-            
-            if authorized and last_auth_time and (datetime.now() - last_auth_time).total_seconds() < 30 and last_auth_read_count > 1:
+            if authorized and last_auth_time and (datetime.now() - last_auth_time).total_seconds() < auth_timeout_seconds and last_auth_read_count > auth_read_threshold:
                 put_auth_stat(image, True)
             else:
-                authorized = False
-                last_auth_read_count = 0
                 put_auth_stat(image, False)
+
+            if last_auth_time and (datetime.now() - last_auth_time).total_seconds() > auth_timeout_seconds:
+                last_auth_read_count = 0
+                authorized = False
 
             # Add our Company
             cv2.putText(
