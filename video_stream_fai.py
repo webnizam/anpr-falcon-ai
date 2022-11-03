@@ -89,7 +89,7 @@ def get_bbox_content(img):
 
     dim = (600, 400)
 
-    # img = cv2.resize(img, dim, interpolation=cv2.INTER_NEAREST)
+    img = cv2.resize(img, dim, interpolation=cv2.INTER_CUBIC)
 
     print(f'{img.shape=}')
 
@@ -99,8 +99,6 @@ def get_bbox_content(img):
     )
     plate_num = get_Text(result)
     print(plate_num)
-    # OCR with pytesseract
-    #plate_num = pytesseract.image_to_string(gray_image, lang='eng')
     return plate_num
 
 
