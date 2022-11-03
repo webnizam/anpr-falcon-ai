@@ -22,13 +22,13 @@ import json
 from threaded_camera import WebcamVideoStream
 
 
-def get_Text(result, img_path):
+def get_Text(result):
     try:
         # print(result)
         # result = result[0][1]
         # image = Image.open(img_path).convert('RGB')
         # boxes = [line[1] for line in result[0]]
-        txts = [line[1] for line in result]
+        txts = [line[1] for line in result if len(line[1]) < 6]
         return ' '.join(txts)
     except Exception as e:
         print(e)
@@ -41,57 +41,57 @@ def remove_img(img_name):
 
 # Extract the image from the bounding box
 def get_bbox_content(img):
-    now = datetime.now()
-    t = now.strftime("%m-%d-%Y-%I-%M-%S")
-    filename = "plate_capture/"+str(t)+".jpg"
-    hsv_min = np.array([0, 250, 100], np.uint8)
-    hsv_max = np.array([10, 255, 255], np.uint8)
-    hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    frame_threshed = cv2.inRange(hsv_img, hsv_min, hsv_max)
+    # now = datetime.now()
+    # t = now.strftime("%m-%d-%Y-%I-%M-%S")
+    # filename = "plate_capture/"+str(t)+".jpg"
+    # hsv_min = np.array([0, 250, 100], np.uint8)
+    # hsv_max = np.array([10, 255, 255], np.uint8)
+    # hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    # frame_threshed = cv2.inRange(hsv_img, hsv_min, hsv_max)
 
-    # Perform morphology
-    se = np.ones((1, 1), dtype='uint8')
-    image_close = cv2.morphologyEx(frame_threshed, cv2.MORPH_CLOSE, se)
+    # # Perform morphology
+    # se = np.ones((1, 1), dtype='uint8')
+    # image_close = cv2.morphologyEx(frame_threshed, cv2.MORPH_CLOSE, se)
 
-    # detect contours on the morphed image
-    ret, thresh = cv2.threshold(image_close, 127, 255, 0)
-    contours, hierarchy = cv2.findContours(
-        thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    # # detect contours on the morphed image
+    # ret, thresh = cv2.threshold(image_close, 127, 255, 0)
+    # contours, hierarchy = cv2.findContours(
+    #     thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-    areaArray = []
-    for i, c in enumerate(contours):
-        area = cv2.contourArea(c)
-        areaArray.append(area)
+    # areaArray = []
+    # for i, c in enumerate(contours):
+    #     area = cv2.contourArea(c)
+    #     areaArray.append(area)
 
-    # Sort countours based on area
-    sorteddata = sorted(zip(areaArray, contours),
-                        key=lambda x: x[0], reverse=True)
+    # # Sort countours based on area
+    # sorteddata = sorted(zip(areaArray, contours),
+    #                     key=lambda x: x[0], reverse=True)
 
-    # find the nth largest contour [n-1][1], in this case 2
-    largestcontour = sorteddata[0][1]
+    # # find the nth largest contour [n-1][1], in this case 2
+    # largestcontour = sorteddata[0][1]
 
-    # get the bounding rectangle of the contour
-    x, y, w, h = cv2.boundingRect(largestcontour)
+    # # get the bounding rectangle of the contour
+    # x, y, w, h = cv2.boundingRect(largestcontour)
 
-    cropped_img = img[y+3:y+h-3, x+3:x+w-3]
-    up_width = 1024
-    up_height = 768
-    up_points = (up_width, up_height)
-    resized_up = cv2.resize(cropped_img, up_points,
-                            interpolation=cv2.INTER_LINEAR)
-    # Convert to greyscale
-    #gray_image = cv2.cvtColor(resized_up, cv2.COLOR_BGR2GRAY)
-    # Reduce the noise
-    gray_image = cv2.bilateralFilter(resized_up, 11, 17, 17)
+    # cropped_img = img[y+3:y+h-3, x+3:x+w-3]
+    # up_width = 1024
+    # up_height = 768
+    # up_points = (up_width, up_height)
+    # resized_up = cv2.resize(cropped_img, up_points,
+    #                         interpolation=cv2.INTER_LINEAR)
+    # # Convert to greyscale
+    # #gray_image = cv2.cvtColor(resized_up, cv2.COLOR_BGR2GRAY)
+    # # Reduce the noise
+    # gray_image = cv2.bilateralFilter(resized_up, 11, 17, 17)
 
-    cv2.imwrite(filename, gray_image)
+    # cv2.imwrite(filename, gray_image)
     # OCR with paddle more accurate than pytesseract
     result = ocr.readtext(
-        filename,
-        allowlist=allowlist,
-        batch_size=10
+        img,
+        allowlist=allowlist
     )
-    plate_num = get_Text(result, filename)
+    plate_num = get_Text(result)
+    print(plate_num)
     # OCR with pytesseract
     #plate_num = pytesseract.image_to_string(gray_image, lang='eng')
     return plate_num
@@ -194,7 +194,7 @@ if __name__ == '__main__':
         # ret, image = frame.read()
         image = streamer.read()
         if image is not None:
-            if (datetime.now() - last_time).microseconds/1000 > 500:
+            if (datetime.now() - last_time).microseconds/1000 > 200:
                 # print(f'{(datetime.now() - last_time).microseconds=}')
                 last_time = datetime.now()
                 output = model(image)

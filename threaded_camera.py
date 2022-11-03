@@ -30,9 +30,13 @@ class WebcamVideoStream:
 
     def read(self):
         self.read_lock.acquire()
-        frame = self.frame.copy()
-        self.read_lock.release()
-        return frame
+        try:
+            frame = self.frame.copy()
+            self.read_lock.release()
+            return frame
+        except Exception as e:
+            self.read_lock.release()
+            return None
 
     def stop(self):
         self.started = False
