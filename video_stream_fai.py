@@ -19,7 +19,7 @@ import time
 import json
 
 
-from threaded_camera import ThreadedCamera
+from threaded_camera import WebcamVideoStream
 
 
 def get_Text(result, img_path):
@@ -183,16 +183,19 @@ if __name__ == '__main__':
     remove_previous_files()
     print('All temp files cleared.')
 
-    streamer = ThreadedCamera(capture_device)
+    streamer = WebcamVideoStream(capture_device)
+
+    streamer.start()
 
     last_time = datetime.now()
 
     while True:
         ctr = ctr + 1
         # ret, image = frame.read()
-        image = streamer.grab_frame()
+        image = streamer.read()
         if image is not None:
-            if (datetime.now() - last_time).total_seconds() > 30:
+            if (datetime.now() - last_time).microseconds/1000 > 500:
+                # print(f'{(datetime.now() - last_time).microseconds=}')
                 last_time = datetime.now()
                 output = model(image)
                 result = np.array(output.pandas().xyxy[0])
@@ -265,5 +268,5 @@ if __name__ == '__main__':
 
         if waitKey(1) & 0xFF == ord('q'):
             break
-
+    streamer.stop()
     cv2.destroyAllWindows()
