@@ -1,7 +1,7 @@
 import cv2
 
-# capture_device = 'rtsp://192.168.1.200:8080/h264_ulaw.sdp'
-capture_device = 1
+capture_device = 'rtsp://192.168.1.50/live0'
+# capture_device = 1
 
 
 cap = cv2.VideoCapture(capture_device)
