@@ -1,5 +1,5 @@
 import argparse
-from fai_video_streamer_fai import FaiNumberPlateFetcher
+from fai_video_streamer import FaiNumberPlateFetcher
 import cv2
 
 if __name__ == '__main__':
