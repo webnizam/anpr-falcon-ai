@@ -8,8 +8,6 @@ import cv2
 import time
 import string
 from datetime import datetime
-#from pytesseract import image_to_string
-# from paddleocr import PaddleOCR,draw_ocr
 import easyocr
 import time
 import json
@@ -229,7 +227,7 @@ if __name__ == '__main__':
                             fontScale=font_scale,
                             color=color,
                             thickness=2
-                        )  
+                        )
                         for plate in authorized_plates:
                             if plate in plate_id:
                                 authorized = True

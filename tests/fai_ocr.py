@@ -1,9 +1,6 @@
 
 # from paddleocr import PaddleOCR,draw_ocr
-import os
 import cv2
-import PIL
-import matplotlib.pyplot as plt
 import easyocr
 
 
@@ -15,7 +12,6 @@ ocr = easyocr.Reader(['en'])
 result = ocr.readtext(img_path)
 
 # draw result
-from PIL import Image
 result = result[0]
 image = cv2.imread(img_path)
 # boxes = [line[0] for line in result]
@@ -29,7 +25,7 @@ thickness = 2
 
 print(str(result))
 # im_show = draw_ocr(image, boxes, txts, scores, font_path='simfang.ttf')
-im_show = cv2.putText(image, str(result), org, font, 
-                   fontScale, color, thickness, cv2.LINE_AA)
+im_show = cv2.putText(image, str(result), org, font,
+                      fontScale, color, thickness, cv2.LINE_AA)
 # im_show = Image.fromarray(im_show)
 cv2.imwrite('result.jpg', im_show)

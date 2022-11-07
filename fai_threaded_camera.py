@@ -2,8 +2,10 @@ from threading import Thread, Lock
 import cv2
 from typing import Any
 
-#Stream from Camera 
-#Credits to https://www.falcons.ai | Michael Stattelman
+# Stream from Camera
+# Credits to https://www.falcons.ai | Michael Stattelman
+
+
 class WebcamVideoStream:
     def __init__(self, src: Any = 0, width=1280, height=720):
         self.stream = cv2.VideoCapture(src)
@@ -38,6 +40,10 @@ class WebcamVideoStream:
         except Exception as e:
             self.read_lock.release()
             return None
+
+    def destroy(self):
+        cv2.destroyAllWindows()
+        self.stream.release()
 
     def stop(self):
         self.started = False
