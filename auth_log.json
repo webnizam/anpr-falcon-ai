@@ -1,0 +1,21 @@
+[
+    "{'plate': '82471', 'time': datetime.datetime(2022, 11, 8, 1, 38, 39, 546789), 'scan_count': 1}",
+    "{'plate': '82471', 'time': datetime.datetime(2022, 11, 8, 1, 38, 47, 221269), 'scan_count': 1}",
+    "{'plate': '82471', 'time': datetime.datetime(2022, 11, 8, 1, 38, 51, 662696), 'scan_count': 2}",
+    "{'plate': '82471', 'time': datetime.datetime(2022, 11, 8, 1, 38, 55, 370811), 'scan_count': 3}",
+    "{'plate': '82471', 'time': datetime.datetime(2022, 11, 8, 1, 38, 58, 784087), 'scan_count': 4}",
+    "{'plate': '82471', 'time': datetime.datetime(2022, 11, 8, 1, 38, 59, 490929), 'scan_count': 5}",
+    "{'plate': '82471', 'time': datetime.datetime(2022, 11, 8, 1, 38, 59, 957817), 'scan_count': 6}",
+    "{'plate': '82471', 'time': datetime.datetime(2022, 11, 8, 1, 39, 2, 498299), 'scan_count': 7}",
+    "{'plate': '82471', 'time': datetime.datetime(2022, 11, 8, 1, 39, 2, 966814), 'scan_count': 8}",
+    "{'plate': '82471', 'time': datetime.datetime(2022, 11, 8, 1, 39, 3, 200890), 'scan_count': 9}",
+    "{'plate': '82471', 'time': datetime.datetime(2022, 11, 8, 1, 39, 3, 664364), 'scan_count': 10}",
+    "{'plate': '82471', 'time': datetime.datetime(2022, 11, 8, 1, 39, 3, 895742), 'scan_count': 11}",
+    "{'plate': '82471', 'time': datetime.datetime(2022, 11, 8, 1, 39, 4, 121496), 'scan_count': 12}",
+    "{'plate': '82471', 'time': datetime.datetime(2022, 11, 8, 1, 39, 4, 350527), 'scan_count': 13}",
+    "{'plate': '82471', 'time': datetime.datetime(2022, 11, 8, 1, 39, 6, 638429), 'scan_count': 14}",
+    "{'plate': '82471', 'time': datetime.datetime(2022, 11, 8, 1, 39, 6, 870317), 'scan_count': 15}",
+    "{'plate': '82471', 'time': datetime.datetime(2022, 11, 8, 1, 39, 7, 568578), 'scan_count': 16}",
+    "{'plate': '82471', 'time': datetime.datetime(2022, 11, 8, 1, 39, 8, 28477), 'scan_count': 17}",
+    "{'plate': '82471', 'time': datetime.datetime(2022, 11, 8, 1, 39, 8, 256978), 'scan_count': 18}"
+]

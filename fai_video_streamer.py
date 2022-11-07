@@ -109,7 +109,7 @@ class FaiNumberPlateFetcher:
                                     self.authorized = True
                                     self.last_auth_time = datetime.now()
                                     self.last_auth_read_count += 1
-                                    # print(f'{last_auth_read_count=}')
+                                    self.log_auth(plate)
                                     break
 
                 if self.authorized and self.last_auth_time \
@@ -216,6 +216,25 @@ class FaiNumberPlateFetcher:
                 print(e)
                 auth_plates = []
         return auth_plates
+
+    def log_auth(self, plate):
+        log = {
+            'plate': plate,
+            'time': datetime.now().isoformat(),
+            'scan_count': self.last_auth_read_count
+        }
+        if plate:
+            with open('auth_log.json') as f:
+                try:
+                    data = json.load(f)
+                    if not data:
+                        data = []
+                except:
+                    data = []
+            data.append(log)
+            with open('auth_log.json', 'w') as f:
+                json.dump(str(data), f, indent=4,
+                          separators=(',', ': '))
 
     def save_to_json(self, plate):
         if plate:
