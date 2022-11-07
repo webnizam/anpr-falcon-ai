@@ -2,7 +2,8 @@ from threading import Thread, Lock
 import cv2
 from typing import Any
 
-
+#Stream from Camera 
+#Credits to https://www.falcons.ai | Michael Stattelman
 class WebcamVideoStream:
     def __init__(self, src: Any = 0, width=1280, height=720):
         self.stream = cv2.VideoCapture(src)

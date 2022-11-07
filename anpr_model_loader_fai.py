@@ -2,14 +2,14 @@ import torch
 import numpy as np
 
 
-#load anpr model 
-#credits to https://www.falcons.ai
+#Load ANPR Model 
+#Credits to https://www.falcons.ai | Michael Stattelman
 class FaiAnprModelLoader:
     def __init__(self, path, driver):
         self.path = path
         self.device = torch.device(driver)
         self.model = torch.hub.load(
-            'ultralytics-yolov5-6371de8/',
+            'ultralytics-yolov5/',
             'custom',
             source='local',
             path=path,

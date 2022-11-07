@@ -6,12 +6,7 @@ import sys
 from anpr_model_loader_fai import FaiAnprModelLoader
 import cv2
 import time
-import torch
 import string
-# import pytesseract
-import numpy as np
-from PIL import Image
-from cv2 import waitKey
 from datetime import datetime
 import matplotlib.pyplot as plt
 #from pytesseract import image_to_string
@@ -49,10 +44,22 @@ ctr = 0
 def get_Text(result):
     try:
         txts = [line[1] for line in result if len(line[1]) < 6]
+
+        if len(txts) > 4:
+            txts = txts[:3]
+
         return ' '.join(txts)
     except Exception as e:
         print(e)
         return ""
+
+
+def resize_image(image, height=400):
+    aspect_ratio = float(image.shape[1])/float(image.shape[0])
+    window_width = height/aspect_ratio
+    image = cv2.resize(image, (int(height), int(window_width)),
+                       interpolation=cv2.INTER_LANCZOS4)
+    return image
 
 
 def remove_img(img_name):
@@ -61,12 +68,8 @@ def remove_img(img_name):
 
 # Extract the image from the bounding box
 def get_bbox_content(img):
-    dim = (600, 400)
-
-    img = cv2.resize(img, dim, interpolation=cv2.INTER_LANCZOS4)
-
     result = ocr.readtext(
-        img,
+        resize_image(img),
         allowlist=allowlist
     )
     plate_num = get_Text(result)
@@ -104,11 +107,11 @@ def save_to_json(plate):
                     data = []
             except:
                 data = []
-            data.append(plate)
-            data = list(set(data))
-            with open('result.json', 'w') as f:
-                json.dump(data, f, indent=4,
-                          separators=(',', ': '))
+        data.append(plate)
+        data = list(set(data))
+        with open('result.json', 'w') as f:
+            json.dump(data, f, indent=4,
+                      separators=(',', ': '))
 
 
 def put_auth_stat(image, authorized):
@@ -195,6 +198,7 @@ if __name__ == '__main__':
                 last_time = datetime.now()
                 # output = model(image)
                 # result = np.array(output.pandas().xyxy[0])
+
                 result = anpr.get_number_plates(image)
                 start = time.perf_counter()
                 if len(result) > 0:
@@ -226,7 +230,7 @@ if __name__ == '__main__':
                             fontScale=font_scale,
                             color=color,
                             thickness=2
-                        )  # class and confidence text
+                        )  
                         for plate in authorized_plates:
                             if plate in plate_id:
                                 authorized = True
@@ -235,7 +239,8 @@ if __name__ == '__main__':
                                 # print(f'{last_auth_read_count=}')
                                 break
 
-            if authorized and last_auth_time and (datetime.now() - last_auth_time).total_seconds() < auth_timeout_seconds and last_auth_read_count > auth_read_threshold:
+            if authorized and last_auth_time and (datetime.now() - last_auth_time).total_seconds() < auth_timeout_seconds \
+                    and last_auth_read_count > auth_read_threshold:
                 put_auth_stat(image, True)
             else:
                 put_auth_stat(image, False)
@@ -283,7 +288,7 @@ if __name__ == '__main__':
             cv2.imshow("ANPR - FALCONS.AI", image)
             print(f'Took {elapsed} seconds to process the frame.')
 
-        if waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     streamer.stop()
     cv2.destroyAllWindows()
