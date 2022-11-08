@@ -9,6 +9,7 @@ import cv2
 import easyocr
 from fai_anpr_model_loader import FaiAnprModelLoader
 from fai_threaded_camera import WebcamVideoStream
+from dateutil import parser
 
 
 class FaiNumberPlateFetcher:
@@ -26,7 +27,7 @@ class FaiNumberPlateFetcher:
         self.last_auth_read_count = 0
         self.authorized = False
         self.auth_timeout_seconds = 5
-        self.auth_read_threshold = 5
+        self.auth_read_threshold = 3
 
         self.authorized_plates = self.get_authorized_plates()
         print(f'{self.authorized_plates=}')
@@ -109,21 +110,22 @@ class FaiNumberPlateFetcher:
                                     self.authorized = True
                                     self.last_auth_time = datetime.now()
                                     self.last_auth_read_count += 1
-                                    self.log_auth(plate)
+                                    if self.last_auth_read_count > self.auth_read_threshold:
+                                        self.log_auth(plate)
                                     break
 
                 if self.authorized and self.last_auth_time \
                     and (datetime.now() - self.last_auth_time).total_seconds() < self.auth_timeout_seconds \
                         and self.last_auth_read_count > self.auth_read_threshold:
 
-                    print('\n\n')
+                    # print('\n\n')
 
-                    print(f'{self.authorized=}')
-                    print(
-                        f'{(datetime.now() - self.last_auth_time).total_seconds()=}')
-                    print(f'{self.auth_timeout_seconds=}')
-                    print(f'{self.last_auth_read_count=}')
-                    print(f'{self.auth_read_threshold=}')
+                    # print(f'{self.authorized=}')
+                    # print(
+                    #     f'{(datetime.now() - self.last_auth_time).total_seconds()=}')
+                    # print(f'{self.auth_timeout_seconds=}')
+                    # print(f'{self.last_auth_read_count=}')
+                    # print(f'{self.auth_read_threshold=}')
 
                     self.put_auth_stat(image, True)
                 else:
@@ -221,7 +223,7 @@ class FaiNumberPlateFetcher:
         log = {
             'plate': plate,
             'time': datetime.now().isoformat(),
-            'scan_count': self.last_auth_read_count
+            # 'scan_count': self.last_auth_read_count
         }
         if plate:
             with open('auth_log.json') as f:
@@ -231,10 +233,13 @@ class FaiNumberPlateFetcher:
                         data = []
                 except:
                     data = []
-            data.append(log)
-            with open('auth_log.json', 'w') as f:
-                json.dump(str(data), f, indent=4,
-                          separators=(',', ': '))
+
+            if not (plate in str(data) and (datetime.now() - parser.parse([item for item in data if item['plate'] == plate][-1]['time'])).total_seconds() < 2 * 60):
+                data.append(log)
+                with open('auth_log.json', 'w') as f:
+                    json.dump(data,
+                              f,
+                              indent=4)
 
     def save_to_json(self, plate):
         if plate:
